@@ -1,0 +1,13 @@
+docker run \
+  -v $PWD/credentials.ini:/credentials.ini \
+  -v $PWD/conf:/etc/letsencrypt \
+  -v $PWD/lib:/var/lib/letsencrypt \
+  -v $PWD/log:/var/log/letsencrypt \
+  -it certbot-dns-mailinabox certonly \
+  --test-cert \
+  -n \
+  --email john@samiz.app \
+  --agree-tos \
+  -a dns-mailinabox \
+  --dns-mailinabox-credentials /credentials.ini \
+  -d *.samiz.app

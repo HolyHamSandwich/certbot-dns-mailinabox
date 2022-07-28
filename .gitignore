@@ -208,7 +208,9 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/emacs,python
 
-!.gitkeep
-conf
-lib
+conf/*
+lib/*
+log/*
 credentials.ini
+!.gitkeep
+!*/.gitkeep

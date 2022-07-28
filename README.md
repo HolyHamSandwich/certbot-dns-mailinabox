@@ -14,3 +14,31 @@ certbot certonly -a dns-mailinabox \
 
 So far only administrator accounts with 2FA enabled work. The host needs to be
 specified and has to be the one with the web administration interface.
+
+### Docker
+Setup:
+```bash
+cp sample-credentials.ini credentials.ini
+
+<update credentials.ini>
+```
+
+Build:
+```bash
+docker build -t certbot-dns-mailinabox .
+```
+Run:
+```bash
+docker run \
+  -v $PWD/credentials.ini:/credentials.ini \
+  -v $PWD/conf:/etc/letsencrypt \
+  -v $PWD/lib:/var/lib/letsencrypt \
+  -v $PWD/log:/var/log/letsencrypt \
+  -it certbot-dns-mailinabox certonly \
+  -n \
+  --email <email> \
+  --agree-tos \
+  -a dns-mailinabox \
+  --dns-mailinabox-credentials /credentials.ini \
+  -d <domain>
+```

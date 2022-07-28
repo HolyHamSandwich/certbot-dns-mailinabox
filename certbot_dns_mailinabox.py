@@ -32,7 +32,6 @@ class Authenticator(dns_common.DNSAuthenticator):
     def add_parser_arguments(cls, add: Callable[..., None], default_propagation_seconds: int = 10) -> None:
         super().add_parser_arguments(add, default_propagation_seconds)
         add("credentials", help="Mail-in-a-Box credentials INI file.")
-        add("host", help="The Mail-in-a-Box web interface host.")
 
     def more_info(self) -> str:
         return "This plugin configures a DNS TXT record to respond to a DNS-01 challenge using " + \
@@ -43,6 +42,7 @@ class Authenticator(dns_common.DNSAuthenticator):
             "credentials",
             "Mail-in-a-Box credentials INI file.",
             {
+                "host": "Mail-in-a-Box hostname",
                 "username": "User e-mail address",
                 "password": "User password",
                 "totp_secret": "Temporary one-time password secret for 2FA"
@@ -50,14 +50,18 @@ class Authenticator(dns_common.DNSAuthenticator):
         )
 
     def _perform(self, domain: str, validation_name: str, validation: str) -> None:
+        host = self.credentials.conf("host")
         username = self.credentials.conf("username")
         password = self.credentials.conf("password")
         totp_secret = self.credentials.conf("totp_secret")
-        
+
         tries = 3
         while True:
-            r = post(f"https://{self.host}/admin/dns/custom/{validation_name}/txt", 
-                    auth=(username, password), data=validation, headers={"X-Auth-Token": TOTP(totp_secret).now()})
+            headers = {}
+            if totp_secret:
+                headers["X-Auth-Token"] = TOTP(totp_secret).now()
+            r = post(f"https://{host}/admin/dns/custom/{validation_name}/txt", 
+                    auth=(username, password), data=validation, headers=headers)
             
             s = r.status_code
             if s == codes.ok:
@@ -77,13 +81,14 @@ class Authenticator(dns_common.DNSAuthenticator):
                 r.raise_for_status()
         
     def _cleanup(self, domain: str, validation_name: str, validation: str) -> None:
+        host = self.credentials.conf("host")
         username = self.credentials.conf("username")
         password = self.credentials.conf("password")
         totp_secret = self.credentials.conf("totp_secret")
-        
+
         tries = 3
         while True:
-            r = delete(f"https://{self.host}/admin/dns/custom/{validation_name}/txt", 
+            r = delete(f"https://{host}/admin/dns/custom/{validation_name}/txt", 
                     auth=(username, password), data=validation, headers={"X-Auth-Token": TOTP(totp_secret).now()})
         
             s = r.status_code

@@ -1,0 +1,6 @@
+conf
+lib
+log
+dist
+*.egg
+build
