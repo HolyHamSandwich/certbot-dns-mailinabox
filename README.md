@@ -16,7 +16,9 @@ So far only administrator accounts with 2FA enabled work. The host needs to be
 specified and has to be the one with the web administration interface.
 
 ### Docker
+
 [![Docker](https://github.com/HolyHamSandwich/certbot-dns-mailinabox/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/HolyHamSandwich/certbot-dns-mailinabox/actions/workflows/docker-publish.yml)
+
 Setup:
 ```bash
 cp sample-credentials.ini credentials.ini
